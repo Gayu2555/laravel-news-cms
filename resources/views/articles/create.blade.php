@@ -147,12 +147,14 @@
                     </select>
                 </div>
 
-                <div class="ml-auto flex items-center gap-2">
-                    <button type="button" id="read-also-button" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors text-sm font-medium">
-                        <i class="fas fa-book mr-2"></i>Baca Juga
+                <div class="w-px h-6 bg-gray-300"></div>
+
+                <div class="flex items-center gap-1">
+                    <button type="button" id="read-also-button" class="p-2 hover:bg-gray-200 rounded-md transition-colors">
+                        <i class="fas fa-bookmark"></i> Baca Juga
                     </button>
-                    <button type="button" id="quote-from-button" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors text-sm font-medium">
-                        <i class="fas fa-quote-right mr-2"></i>Kutipan
+                    <button type="button" id="quote-from-button" class="p-2 hover:bg-gray-200 rounded-md transition-colors">
+                        <i class="fas fa-quote-right"></i> Kutipan
                     </button>
                 </div>
             </div>
@@ -202,6 +204,48 @@
             </div>
         </div>
     </form>
+
+    <!-- Read Also Modal -->
+    <div id="readAlsoModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-auto">
+            <h3 class="text-lg font-medium mb-4">Tambah Baca Juga</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Judul Artikel</label>
+                    <input type="text" id="readAlsoTitle" class="w-full px-3 py-2 border rounded-md" placeholder="Masukkan judul artikel...">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">URL Artikel</label>
+                    <input type="url" id="readAlsoUrl" class="w-full px-3 py-2 border rounded-md" placeholder="https://...">
+                </div>
+                <div class="flex justify-end gap-2 mt-2">
+                    <button type="button" id="cancelReadAlso" class="px-4 py-2 border rounded-md hover:bg-gray-100">Batal</button>
+                    <button type="button" id="insertReadAlso" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Tambahkan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quote From Modal -->
+    <div id="quoteFromModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-auto">
+            <h3 class="text-lg font-medium mb-4">Tambah Kutipan</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Teks Kutipan</label>
+                    <textarea id="quoteText" class="w-full px-3 py-2 border rounded-md" rows="3" placeholder="Masukkan teks kutipan..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Sumber Kutipan</label>
+                    <input type="text" id="quoteSource" class="w-full px-3 py-2 border rounded-md" placeholder="Nama sumber, tanggal, dll.">
+                </div>
+                <div class="flex justify-end gap-2 mt-2">
+                    <button type="button" id="cancelQuoteFrom" class="px-4 py-2 border rounded-md hover:bg-gray-100">Batal</button>
+                    <button type="button" id="insertQuoteFrom" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Tambahkan</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -268,18 +312,14 @@
             }
         });
         
-        $('#read-also-button').click(() => {
-            const selection = quill.getSelection();
-            if (selection) {
-                quill.insertText(selection.index, "\n[Baca Juga: Judul Artikel Lain]\n");
-            }
+        $('#read-mode-button').click(() => {
+            // Toggle read mode - implementation needed
+            alert('Fitur read mode akan diimplementasikan di sini.');
         });
         
-        $('#quote-from-button').click(() => {
-            const selection = quill.getSelection();
-            if (selection) {
-                quill.insertText(selection.index, "\n\"Kutipan di sini\" - Sumber\n");
-            }
+        $('#text-color-button').click(() => {
+            // Color picker implementation needed
+            alert('Fitur text color akan diimplementasikan di sini.');
         });
 
         // Handle form submission
@@ -304,6 +344,165 @@
                     $('#imagePreview').removeClass('hidden').find('img').attr('src', e.target.result);
                 };
                 reader.readAsDataURL(file);
+            }
+        });
+        
+        // Get references to buttons and modals
+        const buttons = {
+            readAlso: document.getElementById("read-also-button"),
+            quoteFrom: document.getElementById("quote-from-button")
+        };
+
+        const modals = {
+            readAlso: document.getElementById("readAlsoModal"),
+            quoteFrom: document.getElementById("quoteFromModal")
+        };
+
+        // Read Also functionality
+        if (buttons.readAlso && modals.readAlso) {
+            buttons.readAlso.addEventListener("click", () => {
+                modals.readAlso.classList.replace("hidden", "flex");
+            });
+
+            // Cancel Read Also
+            const cancelReadAlso = document.getElementById("cancelReadAlso");
+            if (cancelReadAlso) {
+                cancelReadAlso.addEventListener("click", () => {
+                    const readAlsoTitle = document.getElementById("readAlsoTitle");
+                    const readAlsoUrl = document.getElementById("readAlsoUrl");
+                    if (readAlsoTitle) readAlsoTitle.value = "";
+                    if (readAlsoUrl) readAlsoUrl.value = "";
+                    modals.readAlso.classList.replace("flex", "hidden");
+                });
+            }
+
+            // Insert Read Also
+            const insertReadAlso = document.getElementById("insertReadAlso");
+            if (insertReadAlso) {
+                insertReadAlso.addEventListener("click", () => {
+                    const readAlsoTitle = document.getElementById("readAlsoTitle");
+                    const readAlsoUrl = document.getElementById("readAlsoUrl");
+
+                    if (!readAlsoTitle || !readAlsoUrl) {
+                        console.error("Element readAlsoTitle atau readAlsoUrl tidak ditemukan.");
+                        return;
+                    }
+
+                    const title = readAlsoTitle.value.trim();
+                    const url = readAlsoUrl.value.trim();
+
+                    if (!title || !url) {
+                        alert("Harap isi judul dan URL artikel");
+                        return;
+                    }
+
+                    const html = `
+                        <div class="read-also p-4 bg-gray-50 rounded-lg my-4">
+                            <p><strong>Baca Juga:</strong> <a href="${url}" target="_blank" class="text-blue-600 hover:underline">${title}</a></p>
+                        </div>
+                    `;
+
+                    const range = quill.getSelection(true);
+                    quill.clipboard.dangerouslyPasteHTML(range.index, html);
+
+                    // Reset form dan tutup modal
+                    readAlsoTitle.value = "";
+                    readAlsoUrl.value = "";
+                    modals.readAlso.classList.replace("flex", "hidden");
+                });
+            }
+        }
+
+        // Quote From functionality
+        if (buttons.quoteFrom && modals.quoteFrom) {
+            buttons.quoteFrom.addEventListener("click", () => {
+                modals.quoteFrom.classList.replace("hidden", "flex");
+            });
+
+            // Get quote elements
+            const quoteText = document.getElementById("quoteText");
+            const quoteSource = document.getElementById("quoteSource");
+            const cancelQuoteFrom = document.getElementById("cancelQuoteFrom");
+            const insertQuoteFrom = document.getElementById("insertQuoteFrom");
+
+            // Handle modal close
+            if (cancelQuoteFrom) {
+                cancelQuoteFrom.addEventListener("click", () => {
+                    // Clear form fields
+                    if (quoteText) quoteText.value = "";
+                    if (quoteSource) quoteSource.value = "";
+                    modals.quoteFrom.classList.replace("flex", "hidden");
+                });
+            }
+
+            // Handle citation insertion
+            if (insertQuoteFrom && quoteText && quoteSource) {
+                insertQuoteFrom.addEventListener("click", () => {
+                    const text = quoteText.value.trim();
+                    const source = quoteSource.value.trim();
+
+                    if (!text || !source) {
+                        alert("Harap isi teks kutipan dan sumber");
+                        return;
+                    }
+
+                    // Create citation HTML
+                    const citationHtml = `
+                        <div class="citation-wrapper p-4 bg-gray-50 border rounded-lg my-4">
+                            <div class="citation-text text-gray-700">
+                                <span class="font-medium">Dikutip dari:</span> 
+                                <a href="#" 
+                                data-source="${source}" 
+                                class="text-blue-600 hover:text-blue-800"
+                                >${text}</a>
+                            </div>
+                        </div>
+                    `;
+
+                    // Insert into editor
+                    const range = quill.getSelection(true);
+                    quill.insertText(range.index, "\n");
+                    quill.clipboard.dangerouslyPasteHTML(range.index + 1, citationHtml);
+                    quill.setSelection(range.index + 2);
+
+                    // Reset and close modal
+                    quoteText.value = "";
+                    quoteSource.value = "";
+                    modals.quoteFrom.classList.replace("flex", "hidden");
+                });
+            }
+
+            // Handle citation source click
+            quill.root.addEventListener("click", (event) => {
+                const citationLink = event.target.closest("a[data-source]");
+                if (citationLink) {
+                    event.preventDefault();
+                    const source = citationLink.getAttribute("data-source");
+                    alert(`Sumber kutipan: ${source}`);
+                }
+            });
+        }
+
+        // Close modals when clicking outside
+        Object.values(modals).forEach((modal) => {
+            if (modal) {
+                modal.addEventListener("click", (e) => {
+                    if (e.target === modal) {
+                        // Reset forms
+                        if (modal === modals.readAlso) {
+                            const readAlsoTitle = document.getElementById("readAlsoTitle");
+                            const readAlsoUrl = document.getElementById("readAlsoUrl");
+                            if (readAlsoTitle) readAlsoTitle.value = "";
+                            if (readAlsoUrl) readAlsoUrl.value = "";
+                        } else if (modal === modals.quoteFrom) {
+                            const quoteText = document.getElementById("quoteText");
+                            const quoteSource = document.getElementById("quoteSource");
+                            if (quoteText) quoteText.value = "";
+                            if (quoteSource) quoteSource.value = "";
+                        }
+                        modal.classList.replace("flex", "hidden");
+                    }
+                });
             }
         });
     });
