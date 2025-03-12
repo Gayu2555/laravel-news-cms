@@ -34,7 +34,6 @@
             </ul>
         </div>
     @endif
-
     <form id="articleForm" method="POST" action="{{ route('articles.store') }}" enctype="multipart/form-data" class="space-y-6">
         @csrf
         <!-- Article Header -->
